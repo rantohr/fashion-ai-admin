@@ -2,6 +2,10 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.8.
 
+## Project plan
+
+See the [Fashion AI Build Plan](https://claude.ai/code/artifact/2760987a-bf21-4a5c-ab54-3a3fb75d1584) for the full 10-day build plan: scope, data model, architecture, and day-by-day schedule.
+
 ## Development server
 
 To start a local development server, run:
