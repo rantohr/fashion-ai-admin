@@ -9,8 +9,9 @@
     <div class="shell__user">
       @if (auth.currentUser(); as user) {
         <p class="shell__user-name">{{ user.name }}</p>
+        <p class="shell__user-email">{{ user.email }}</p>
       }
-      <button type="button" (click)="logout()">Log out</button>
+      <button type="button" class="btn btn--ghost btn--sm" (click)="logout()">Log out</button>
     </div>
   </aside>
   <main class="shell__content">

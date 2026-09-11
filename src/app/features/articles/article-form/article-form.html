@@ -1,11 +1,13 @@
-<h1>{{ articleId() ? 'Edit article' : 'New article' }}</h1>
+<div class="page-header">
+  <h1>{{ articleId() ? 'Edit article' : 'New article' }}</h1>
+</div>
 
 @if (loading()) {
   <p>Loading…</p>
 }
 
-<form [formGroup]="form" (ngSubmit)="submit()">
-  <label>
+<form class="app-form app-form--wide" [formGroup]="form" (ngSubmit)="submit()">
+  <label class="field">
     Outfit
     <select formControlName="outfitId">
       <option value="" disabled>Select an outfit</option>
@@ -15,27 +17,27 @@
     </select>
   </label>
 
-  <label>
+  <label class="field">
     Title
     <input type="text" formControlName="title" />
   </label>
 
-  <label>
+  <label class="field">
     Slug
     <input type="text" formControlName="slug" />
   </label>
 
-  <label>
+  <label class="field">
     Excerpt
     <textarea formControlName="excerpt" rows="2"></textarea>
   </label>
 
-  <label>
+  <label class="field">
     Content (markdown)
     <textarea formControlName="content" rows="8"></textarea>
   </label>
 
-  <label>
+  <label class="field">
     Status
     <select formControlName="status">
       @for (status of statuses; track status) {
@@ -45,13 +47,13 @@
   </label>
 
   @if (error()) {
-    <p class="error">{{ error() }}</p>
+    <p class="error-text">{{ error() }}</p>
   }
 
-  <div class="actions">
-    <button type="submit" [disabled]="form.invalid || saving()">
+  <div class="form-actions">
+    <button type="submit" class="btn btn--primary" [disabled]="form.invalid || saving()">
       {{ saving() ? 'Saving…' : 'Save' }}
     </button>
-    <a routerLink="/articles">Cancel</a>
+    <a routerLink="/articles" class="btn btn--ghost">Cancel</a>
   </div>
 </form>

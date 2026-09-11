@@ -1,22 +1,26 @@
 <div class="login">
-  <h1>Fashion AI Admin</h1>
-  <form [formGroup]="form" (ngSubmit)="submit()">
-    <label>
-      Email
-      <input type="email" formControlName="email" autocomplete="username" />
-    </label>
+  <div class="login__card">
+    <p class="login__brand">Fashion AI Admin</p>
+    <h1>Log in</h1>
 
-    <label>
-      Password
-      <input type="password" formControlName="password" autocomplete="current-password" />
-    </label>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <label class="field">
+        Email
+        <input type="email" formControlName="email" autocomplete="username" />
+      </label>
 
-    @if (error()) {
-      <p class="error">{{ error() }}</p>
-    }
+      <label class="field">
+        Password
+        <input type="password" formControlName="password" autocomplete="current-password" />
+      </label>
 
-    <button type="submit" [disabled]="form.invalid || submitting()">
-      {{ submitting() ? 'Logging in…' : 'Log in' }}
-    </button>
-  </form>
+      @if (error()) {
+        <p class="error-text">{{ error() }}</p>
+      }
+
+      <button type="submit" class="btn btn--primary" [disabled]="form.invalid || submitting()">
+        {{ submitting() ? 'Logging in…' : 'Log in' }}
+      </button>
+    </form>
+  </div>
 </div>

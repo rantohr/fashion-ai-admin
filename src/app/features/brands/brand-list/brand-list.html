@@ -1,38 +1,44 @@
-<h1>Brands</h1>
+<div class="page-header">
+  <div>
+    <h1>Brands</h1>
+    <p class="page-header__subtitle">Manage the brands shown across the storefront.</p>
+  </div>
+  <a routerLink="new" class="btn btn--primary">New brand</a>
+</div>
 
 @if (loading()) {
   <p>Loading…</p>
 } @else if (error()) {
-  <p class="error">{{ error() }}</p>
+  <p class="error-text">{{ error() }}</p>
 } @else if (brands().length === 0) {
-  <p>No brands yet.</p>
-}
-
-@if (!loading() && brands().length > 0) {
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Slug</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (brand of brands(); track brand.id) {
+  <p class="empty-state">No brands yet. Create the first one to get started.</p>
+} @else {
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
         <tr>
-          <td>{{ brand.name }}</td>
-          <td>{{ brand.slug }}</td>
-          <td class="actions">
-            <a [routerLink]="[brand.id]">Edit</a>
-            <button type="button" (click)="requestDelete(brand)">Delete</button>
-          </td>
+          <th>Name</th>
+          <th>Slug</th>
+          <th></th>
         </tr>
-      }
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        @for (brand of brands(); track brand.id) {
+          <tr>
+            <td>{{ brand.name }}</td>
+            <td>{{ brand.slug }}</td>
+            <td class="actions">
+              <a [routerLink]="[brand.id]" class="btn btn--ghost btn--sm">Edit</a>
+              <button type="button" class="btn btn--danger btn--sm" (click)="requestDelete(brand)">
+                Delete
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 }
-
-<a class="new-link" routerLink="new">New brand</a>
 
 <!-- The confirm dialog's code is only fetched the first time a delete is
      requested, instead of being part of this route's initial bundle. -->

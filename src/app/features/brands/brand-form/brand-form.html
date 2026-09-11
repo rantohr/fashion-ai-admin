@@ -1,43 +1,45 @@
-<h1>{{ brandId() ? 'Edit brand' : 'New brand' }}</h1>
+<div class="page-header">
+  <h1>{{ brandId() ? 'Edit brand' : 'New brand' }}</h1>
+</div>
 
 @if (loading()) {
   <p>Loading…</p>
 }
 
-<form [formGroup]="form" (ngSubmit)="submit()">
-  <label>
+<form class="app-form" [formGroup]="form" (ngSubmit)="submit()">
+  <label class="field">
     Name
     <input type="text" formControlName="name" />
   </label>
 
-  <label>
+  <label class="field">
     Slug
     <input type="text" formControlName="slug" />
   </label>
 
-  <label>
+  <label class="field">
     Description
     <textarea formControlName="description" rows="3"></textarea>
   </label>
 
-  <label>
+  <label class="field">
     Logo URL
     <input type="text" formControlName="logoUrl" />
   </label>
 
-  <label>
+  <label class="field">
     Website
     <input type="text" formControlName="website" />
   </label>
 
   @if (error()) {
-    <p class="error">{{ error() }}</p>
+    <p class="error-text">{{ error() }}</p>
   }
 
-  <div class="actions">
-    <button type="submit" [disabled]="form.invalid || saving()">
+  <div class="form-actions">
+    <button type="submit" class="btn btn--primary" [disabled]="form.invalid || saving()">
       {{ saving() ? 'Saving…' : 'Save' }}
     </button>
-    <a routerLink="/brands">Cancel</a>
+    <a routerLink="/brands" class="btn btn--ghost">Cancel</a>
   </div>
 </form>

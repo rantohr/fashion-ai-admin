@@ -1,11 +1,13 @@
-<h1>{{ outfitId() ? 'Edit outfit' : 'New outfit' }}</h1>
+<div class="page-header">
+  <h1>{{ outfitId() ? 'Edit outfit' : 'New outfit' }}</h1>
+</div>
 
 @if (loading()) {
   <p>Loading…</p>
 }
 
-<form [formGroup]="form" (ngSubmit)="submit()">
-  <label>
+<form class="app-form" [formGroup]="form" (ngSubmit)="submit()">
+  <label class="field">
     Brand
     <select formControlName="brandId">
       <option value="" disabled>Select a brand</option>
@@ -15,42 +17,42 @@
     </select>
   </label>
 
-  <label>
+  <label class="field">
     Name
     <input type="text" formControlName="name" />
   </label>
 
-  <label>
+  <label class="field">
     Slug
     <input type="text" formControlName="slug" />
   </label>
 
-  <label>
+  <label class="field">
     Category
     <input type="text" formControlName="category" />
   </label>
 
-  <label>
+  <label class="field">
     Price
     <input type="number" formControlName="price" min="0" step="0.01" />
   </label>
 
-  <label>
+  <label class="field">
     Description
     <textarea formControlName="description" rows="3"></textarea>
   </label>
 
-  <label>
+  <label class="field">
     Image URL
     <input type="text" formControlName="imageUrl" />
   </label>
 
-  <label>
+  <label class="field">
     Tags (comma-separated)
     <input type="text" formControlName="tagsText" />
   </label>
 
-  <label>
+  <label class="field">
     Season
     <select formControlName="season">
       @for (season of seasons; track season) {
@@ -59,7 +61,7 @@
     </select>
   </label>
 
-  <label>
+  <label class="field">
     Status
     <select formControlName="status">
       @for (status of statuses; track status) {
@@ -69,13 +71,13 @@
   </label>
 
   @if (error()) {
-    <p class="error">{{ error() }}</p>
+    <p class="error-text">{{ error() }}</p>
   }
 
-  <div class="actions">
-    <button type="submit" [disabled]="form.invalid || saving()">
+  <div class="form-actions">
+    <button type="submit" class="btn btn--primary" [disabled]="form.invalid || saving()">
       {{ saving() ? 'Saving…' : 'Save' }}
     </button>
-    <a routerLink="/outfits">Cancel</a>
+    <a routerLink="/outfits" class="btn btn--ghost">Cancel</a>
   </div>
 </form>
