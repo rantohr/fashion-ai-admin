@@ -1,3 +1,41 @@
 <h1>Outfits</h1>
-<p>List + create/edit forms, reactive forms, signals for local state. Coming Day 3.</p>
-<a routerLink="new">New outfit</a>
+
+@if (loading()) {
+  <p>Loading…</p>
+} @else if (error()) {
+  <p class="error">{{ error() }}</p>
+} @else if (outfits().length === 0) {
+  <p>No outfits yet.</p>
+}
+
+@if (!loading() && outfits().length > 0) {
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Brand</th>
+        <th>Category</th>
+        <th>Price</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (outfit of outfits(); track outfit.id) {
+        <tr>
+          <td>{{ outfit.name }}</td>
+          <td>{{ outfit.brand?.name ?? outfit.brandId }}</td>
+          <td>{{ outfit.category }}</td>
+          <td>{{ outfit.price }}</td>
+          <td>{{ outfit.status }}</td>
+          <td class="actions">
+            <a [routerLink]="[outfit.id]">Edit</a>
+            <button type="button" (click)="remove(outfit)">Delete</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+
+<a class="new-link" routerLink="new">New outfit</a>

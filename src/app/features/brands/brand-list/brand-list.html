@@ -1,3 +1,47 @@
 <h1>Brands</h1>
-<p>List + create/edit forms, reactive forms, signals for local state. Coming Day 3.</p>
-<a routerLink="new">New brand</a>
+
+@if (loading()) {
+  <p>Loading…</p>
+} @else if (error()) {
+  <p class="error">{{ error() }}</p>
+} @else if (brands().length === 0) {
+  <p>No brands yet.</p>
+}
+
+@if (!loading() && brands().length > 0) {
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Slug</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (brand of brands(); track brand.id) {
+        <tr>
+          <td>{{ brand.name }}</td>
+          <td>{{ brand.slug }}</td>
+          <td class="actions">
+            <a [routerLink]="[brand.id]">Edit</a>
+            <button type="button" (click)="requestDelete(brand)">Delete</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+
+<a class="new-link" routerLink="new">New brand</a>
+
+<!-- The confirm dialog's code is only fetched the first time a delete is
+     requested, instead of being part of this route's initial bundle. -->
+@defer (when pendingDelete() !== null) {
+  @if (pendingDelete(); as brand) {
+    <app-confirm-dialog
+      [message]="'Delete ' + brand.name + '? This cannot be undone.'"
+      (confirmed)="confirmDelete()"
+      (cancelled)="cancelDelete()"
+    />
+  }
+}

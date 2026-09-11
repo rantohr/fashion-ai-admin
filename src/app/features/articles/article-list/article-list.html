@@ -1,3 +1,37 @@
 <h1>Articles</h1>
-<p>List + create/edit forms, reactive forms, signals for local state. Coming Day 3.</p>
-<a routerLink="new">New article</a>
+
+@if (loading()) {
+  <p>Loading…</p>
+} @else if (error()) {
+  <p class="error">{{ error() }}</p>
+} @else if (articles().length === 0) {
+  <p>No articles yet.</p>
+}
+
+@if (!loading() && articles().length > 0) {
+  <table>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Outfit</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (article of articles(); track article.id) {
+        <tr>
+          <td>{{ article.title }}</td>
+          <td>{{ article.outfit?.name ?? article.outfitId }}</td>
+          <td>{{ article.status }}</td>
+          <td class="actions">
+            <a [routerLink]="[article.id]">Edit</a>
+            <button type="button" (click)="remove(article)">Delete</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+
+<a class="new-link" routerLink="new">New article</a>

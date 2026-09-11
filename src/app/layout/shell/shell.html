@@ -6,6 +6,12 @@
         <a [routerLink]="link.path" routerLinkActive="is-active">{{ link.label }}</a>
       }
     </nav>
+    <div class="shell__user">
+      @if (auth.currentUser(); as user) {
+        <p class="shell__user-name">{{ user.name }}</p>
+      }
+      <button type="button" (click)="logout()">Log out</button>
+    </div>
   </aside>
   <main class="shell__content">
     <router-outlet />

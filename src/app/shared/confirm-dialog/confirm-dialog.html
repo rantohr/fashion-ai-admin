@@ -1,0 +1,9 @@
+<div class="overlay">
+  <div class="dialog" role="alertdialog" aria-modal="true">
+    <p>{{ message() }}</p>
+    <div class="actions">
+      <button type="button" (click)="cancelled.emit()">Cancel</button>
+      <button type="button" class="danger" (click)="confirmed.emit()">Delete</button>
+    </div>
+  </div>
+</div>

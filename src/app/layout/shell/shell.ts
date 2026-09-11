@@ -1,13 +1,17 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { AuthService } from '../../core/auth/auth.service';
 
 @Component({
   imports: [RouterLink, RouterLinkActive, RouterOutlet],
   selector: 'app-shell',
   styleUrl: './shell.scss',
   templateUrl: './shell.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Shell {
+  protected readonly auth = inject(AuthService);
+
   protected readonly navLinks = [
     { path: '/dashboard', label: 'Dashboard' },
     { path: '/brands', label: 'Brands' },
@@ -18,4 +22,8 @@ export class Shell {
     { path: '/wizards/article', label: 'Article Wizard' },
     { path: '/scenarios', label: 'Scenarios' },
   ];
+
+  protected logout(): void {
+    this.auth.logout();
+  }
 }

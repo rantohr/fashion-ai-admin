@@ -1,2 +1,57 @@
-<h1>Article form</h1>
-<p>Create/edit article. Coming Day 3.</p>
+<h1>{{ articleId() ? 'Edit article' : 'New article' }}</h1>
+
+@if (loading()) {
+  <p>Loading…</p>
+}
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <label>
+    Outfit
+    <select formControlName="outfitId">
+      <option value="" disabled>Select an outfit</option>
+      @for (outfit of outfits(); track outfit.id) {
+        <option [value]="outfit.id">{{ outfit.name }}</option>
+      }
+    </select>
+  </label>
+
+  <label>
+    Title
+    <input type="text" formControlName="title" />
+  </label>
+
+  <label>
+    Slug
+    <input type="text" formControlName="slug" />
+  </label>
+
+  <label>
+    Excerpt
+    <textarea formControlName="excerpt" rows="2"></textarea>
+  </label>
+
+  <label>
+    Content (markdown)
+    <textarea formControlName="content" rows="8"></textarea>
+  </label>
+
+  <label>
+    Status
+    <select formControlName="status">
+      @for (status of statuses; track status) {
+        <option [value]="status">{{ status }}</option>
+      }
+    </select>
+  </label>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  <div class="actions">
+    <button type="submit" [disabled]="form.invalid || saving()">
+      {{ saving() ? 'Saving…' : 'Save' }}
+    </button>
+    <a routerLink="/articles">Cancel</a>
+  </div>
+</form>

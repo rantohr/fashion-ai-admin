@@ -1,2 +1,43 @@
-<h1>Brand form</h1>
-<p>Create/edit brand. Coming Day 3.</p>
+<h1>{{ brandId() ? 'Edit brand' : 'New brand' }}</h1>
+
+@if (loading()) {
+  <p>Loading…</p>
+}
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <label>
+    Name
+    <input type="text" formControlName="name" />
+  </label>
+
+  <label>
+    Slug
+    <input type="text" formControlName="slug" />
+  </label>
+
+  <label>
+    Description
+    <textarea formControlName="description" rows="3"></textarea>
+  </label>
+
+  <label>
+    Logo URL
+    <input type="text" formControlName="logoUrl" />
+  </label>
+
+  <label>
+    Website
+    <input type="text" formControlName="website" />
+  </label>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  <div class="actions">
+    <button type="submit" [disabled]="form.invalid || saving()">
+      {{ saving() ? 'Saving…' : 'Save' }}
+    </button>
+    <a routerLink="/brands">Cancel</a>
+  </div>
+</form>
