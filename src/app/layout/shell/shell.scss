@@ -1,0 +1,38 @@
+.shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.shell__nav {
+  width: 220px;
+  flex-shrink: 0;
+  padding: 1.5rem 1rem;
+  border-right: 1px solid rgba(128, 128, 128, 0.25);
+
+  nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  a {
+    text-decoration: none;
+    padding: 0.4rem 0.5rem;
+    border-radius: 4px;
+
+    &.is-active {
+      background: rgba(128, 128, 128, 0.15);
+      font-weight: 600;
+    }
+  }
+}
+
+.shell__brand {
+  font-weight: 700;
+}
+
+.shell__content {
+  flex: 1;
+  padding: 2rem;
+}

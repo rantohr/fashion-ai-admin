@@ -1,0 +1,13 @@
+<div class="shell">
+  <aside class="shell__nav">
+    <p class="shell__brand">Fashion AI Admin</p>
+    <nav>
+      @for (link of navLinks; track link.path) {
+        <a [routerLink]="link.path" routerLinkActive="is-active">{{ link.label }}</a>
+      }
+    </nav>
+  </aside>
+  <main class="shell__content">
+    <router-outlet />
+  </main>
+</div>
