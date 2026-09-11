@@ -20,6 +20,12 @@ export class OutfitsService {
     return this.http.post<Outfit>(this.baseUrl, payload);
   }
 
+  // Backs the outfit wizard (Day 4): all-or-nothing via the API's
+  // $transaction batch-create (see fashion-api's outfits.controller.ts).
+  batchCreate(payload: { outfits: OutfitPayload[] }) {
+    return this.http.post<Outfit[]>(`${this.baseUrl}/batch`, payload);
+  }
+
   update(id: string, payload: Partial<OutfitPayload>) {
     return this.http.patch<Outfit>(`${this.baseUrl}/${id}`, payload);
   }

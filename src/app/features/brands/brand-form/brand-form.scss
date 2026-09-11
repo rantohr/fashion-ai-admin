@@ -1,3 +1,11 @@
-// Styling for this page comes from the shared classes in src/styles.scss
-// (.page-header, .app-form, .field, .form-actions, .btn) - nothing
-// page-specific to add here.
+// Most styling for this page comes from the shared classes in
+// src/styles.scss (.page-header, .app-form, .field, .form-actions, .btn) -
+// only the logo preview thumbnail is specific to this page.
+
+.logo-upload__preview {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+}

@@ -27,6 +27,32 @@
     <input type="text" formControlName="logoUrl" />
   </label>
 
+  <div class="field logo-upload">
+    <span>Or upload a logo</span>
+
+    @if (form.controls.logoUrl.value; as logoUrl) {
+      @if (!pendingLogoSrc()) {
+        <img [src]="logoUrl" alt="Current logo" class="logo-upload__preview" />
+      }
+    }
+
+    @if (pendingLogoSrc(); as src) {
+      <app-image-cropper [imageSrc]="src" mode="single" (cropped)="onLogoCropped($event)" />
+      <button type="button" class="btn btn--ghost btn--sm" [disabled]="uploadingLogo()" (click)="cancelLogoCrop()">
+        Cancel
+      </button>
+    } @else {
+      <input type="file" accept="image/*" (change)="onLogoFileSelected($event)" />
+    }
+
+    @if (uploadingLogo()) {
+      <p>Uploading…</p>
+    }
+    @if (logoError()) {
+      <p class="error-text">{{ logoError() }}</p>
+    }
+  </div>
+
   <label class="field">
     Website
     <input type="text" formControlName="website" />

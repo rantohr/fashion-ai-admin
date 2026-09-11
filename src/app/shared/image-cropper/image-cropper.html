@@ -1,0 +1,25 @@
+<div class="cropper">
+  <canvas
+    #canvas
+    (pointerdown)="onPointerDown($event)"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp()"
+    (pointerleave)="onPointerUp()"
+  ></canvas>
+
+  @if (mode() === 'single') {
+    <p class="cropper__hint">Drag on the image to choose the crop area.</p>
+  } @else {
+    <p class="cropper__hint">The image will be sliced into {{ rows() * cols() }} equal images.</p>
+  }
+
+  <button type="button" class="btn btn--primary" [disabled]="!ready() || cropping()" (click)="confirm()">
+    @if (cropping()) {
+      Cropping…
+    } @else if (mode() === 'grid') {
+      Slice into {{ rows() * cols() }} images
+    } @else {
+      Crop image
+    }
+  </button>
+</div>

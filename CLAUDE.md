@@ -76,6 +76,46 @@ the user actually requests a delete. This is deliberately the **only**
 article lists use a plain `confirm()` instead of repeating the pattern.
 Don't add more `@defer` blocks to satisfy this requirement again elsewhere.
 
+## Image cropping & uploads (Day 4)
+
+- `src/app/shared/image-cropper/` — canvas-based crop tool, generic across
+  two modes via `mode = input<'single' | 'grid'>('single')`:
+  - `'grid'`: no interactive selection — the whole image is auto-sliced
+    into an even `rows x cols` grid. Used for the outfit wizard's combined
+    10-outfit image (`rows=5, cols=2`), because the image-generation prompt
+    already asks the AI for a clean, gapless grid.
+  - `'single'`: the user drags a rectangle on the canvas (pointer events,
+    not mouse events, for touch support) to pick one crop region. Used for
+    brand logo upload (`brand-form.ts`'s `onLogoFileSelected`/
+    `onLogoCropped`) — reusing this same component, not a second cropper.
+  - Both modes emit `cropped = output<Blob[]>()` (length 1 for single,
+    `rows*cols` for grid) via `HTMLCanvasElement.toBlob()`. The component
+    reads `imageSrc` reactively through an `effect()` keyed on both
+    `imageSrc()` and the `viewChild` canvas signal — that's what makes it
+    safe to swap the source image on an already-mounted instance, not just
+    on first render.
+  - **Not covered by the test suite**: this project's Vitest+jsdom
+    environment has no real canvas 2D context or image decoding (no
+    `canvas` npm package installed, and it wasn't added here to avoid a
+    native-binary dependency on Windows) — `image-cropper.spec.ts` only
+    verifies the component mounts and accepts inputs. The actual pixel
+    cropping is a manual/browser-verified concern.
+- `src/app/core/uploads/uploads.service.ts` — posts a `Blob` as
+  `multipart/form-data` to `POST /uploads`; do **not** set a Content-Type
+  header manually, `HttpClient` sets the multipart boundary itself from the
+  `FormData` body. Returns `{ url: string }`, an **absolute**
+  `http://localhost:3000/uploads/...` URL suitable to store directly as
+  `imageUrl`/`logoUrl`.
+- `OutfitsService.batchCreate()` posts to `POST /outfits/batch` (the Day 2
+  transactional endpoint) — the outfit wizard uploads all 10 cropped
+  images first (`forkJoin`), then does one `batchCreate` call so the
+  create is genuinely all-or-nothing, matching the API's transaction.
+- `src/app/features/wizards/outfit-wizard/outfit-wizard.utils.ts` holds the
+  pure logic (`parseOutfitDrafts`, `slugify`, `withUniqueSlugs`) split out
+  specifically so it's unit-testable without any DOM/canvas involved — see
+  its `.spec.ts` for real coverage of the validation rules, as opposed to
+  the component's necessarily-shallow spec.
+
 ## Backend
 
 There is no local API in this repo. `fashion-api` (NestJS) owns Postgres via

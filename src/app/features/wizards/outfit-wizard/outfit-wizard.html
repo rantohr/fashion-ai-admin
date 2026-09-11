@@ -1,6 +1,117 @@
-<h1>Outfit wizard</h1>
-<p>
-  3 steps: generate a data-generation prompt → paste AI JSON back in →
-  generate an image prompt for one combined 10-outfit image → crop tool
-  slices it into 10 images → batch-create (one transaction). Coming Day 4.
-</p>
+<div class="page-header">
+  <h1>Outfit wizard</h1>
+</div>
+
+<ol class="wizard-steps">
+  <li [class.is-active]="step() === 1" [class.is-done]="step() > 1">1. Generate data</li>
+  <li [class.is-active]="step() === 2" [class.is-done]="step() > 2">2. Generate image</li>
+  <li [class.is-active]="step() === 3">3. Crop &amp; create</li>
+</ol>
+
+@if (step() === 1) {
+  <div class="app-form app-form--wide">
+    <label class="field">
+      Brand
+      <select [ngModel]="brandId()" (ngModelChange)="brandId.set($event)">
+        <option value="" disabled>Select a brand</option>
+        @for (brand of brands(); track brand.id) {
+          <option [value]="brand.id">{{ brand.name }}</option>
+        }
+      </select>
+    </label>
+
+    <div class="wizard-prompt">
+      <div class="wizard-prompt__header">
+        <span>Data-generation prompt</span>
+        <button type="button" class="btn btn--ghost btn--sm" (click)="copyToClipboard(dataPrompt())">Copy</button>
+      </div>
+      <pre class="wizard-prompt__body">{{ dataPrompt() }}</pre>
+    </div>
+
+    <label class="field">
+      Paste the AI's JSON response ({{ outfitCount }} outfits)
+      <textarea rows="10" [ngModel]="jsonInput()" (ngModelChange)="jsonInput.set($event)"></textarea>
+    </label>
+
+    @if (parseErrors().length > 0) {
+      <ul class="error-text wizard-errors">
+        @for (err of parseErrors(); track err) {
+          <li>{{ err }}</li>
+        }
+      </ul>
+    }
+
+    <div class="form-actions">
+      <button
+        type="button"
+        class="btn btn--primary"
+        [disabled]="!brandId() || !jsonInput()"
+        (click)="parseJson()"
+      >
+        Parse &amp; continue
+      </button>
+    </div>
+  </div>
+}
+
+@if (step() === 2) {
+  <div class="app-form app-form--wide">
+    <div class="wizard-prompt">
+      <div class="wizard-prompt__header">
+        <span>Image-generation prompt</span>
+        <button type="button" class="btn btn--ghost btn--sm" (click)="copyToClipboard(imagePrompt())">Copy</button>
+      </div>
+      <pre class="wizard-prompt__body">{{ imagePrompt() }}</pre>
+    </div>
+
+    <div class="paste-zone" tabindex="0" (paste)="onImagePasted($event)">
+      @if (combinedImageSrc(); as src) {
+        <img [src]="src" alt="Combined outfits" />
+      } @else {
+        <p>Click here and paste (Ctrl/Cmd+V) the generated image, or choose a file below.</p>
+      }
+    </div>
+
+    <input type="file" accept="image/*" (change)="onImageFileSelected($event)" />
+
+    <div class="form-actions">
+      <button type="button" class="btn btn--ghost" (click)="backTo(1)">Back</button>
+      <button type="button" class="btn btn--primary" [disabled]="!combinedImageSrc()" (click)="goToCrop()">
+        Continue to crop
+      </button>
+    </div>
+  </div>
+}
+
+@if (step() === 3) {
+  <div class="app-form app-form--wide">
+    @if (createdCount(); as count) {
+      <p>Created {{ count }} outfits.</p>
+      <div class="form-actions">
+        <button type="button" class="btn btn--primary" (click)="goToOutfits()">View outfits</button>
+      </div>
+    } @else {
+      @if (combinedImageSrc(); as src) {
+        <app-image-cropper
+          [imageSrc]="src"
+          mode="grid"
+          [rows]="gridRows"
+          [cols]="gridCols"
+          (cropped)="onCropped($event)"
+        />
+      }
+
+      @if (createError()) {
+        <p class="error-text">{{ createError() }}</p>
+      }
+
+      @if (creating()) {
+        <p>Uploading images and creating outfits…</p>
+      }
+
+      <div class="form-actions">
+        <button type="button" class="btn btn--ghost" [disabled]="creating()" (click)="backTo(2)">Back</button>
+      </div>
+    }
+  </div>
+}
