@@ -47,10 +47,12 @@ that trio as the reference implementation before starting a new one.
 7. Form component: reactive forms (`FormBuilder.nonNullable.group`), read
    `:id` from `ActivatedRoute.snapshot.paramMap` to decide create-vs-edit
    mode, signals for loading/saving/error state. If the entity references
-   another one (like `outfits.brandId` or `articles.outfitId`), inject that
-   other feature's service too and populate a `<select>` from its `list()`
-   call in the same `ngOnInit` — that request fires unconditionally, not
-   just in edit mode (see `outfit-form.ts`).
+   another one (like `outfits.brandId`), inject that other feature's
+   service too and populate a `<select>` from its `list()` call in the same
+   `ngOnInit` — that request fires unconditionally, not just in edit mode
+   (see `outfit-form.ts`). Not every entity has such a reference: `articles`
+   is deliberately independent, with no FK to any other table — don't add
+   one back when scaffolding future article-adjacent work.
 8. Any spec file whose component imports `RouterLink`/`RouterLinkActive`/
    `RouterOutlet` needs `provideRouter([])` in `TestBed.configureTestingModule`
    providers (`NG0201` otherwise). Any component whose `ngOnInit` calls

@@ -24,9 +24,8 @@ describe('ArticleForm', () => {
     httpMock.verify();
   });
 
-  it('should create', () => {
+  it('should create without fetching any related resource (articles are independent)', () => {
     fixture.detectChanges();
-    httpMock.expectOne('http://localhost:3000/outfits').flush([]);
     expect(component).toBeTruthy();
   });
 });
