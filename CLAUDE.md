@@ -163,6 +163,23 @@ Don't add more `@defer` blocks to satisfy this requirement again elsewhere.
   wizard-chrome classes there, not per-component, now that two components
   use them.
 
+## Dashboard (Day 5)
+
+- `features/dashboard/`: `DashboardService` (`GET /dashboard/stats` -
+  content counts) and `BusinessProfileService` (`GET`/`PATCH
+  /business-profile`, the Day 2 singleton endpoint) are separate services
+  hitting separate API resources — don't merge them into one service just
+  because they render on the same page.
+- `BusinessProfile`'s Decimal fields (`monthlyRevenue`, `monthlyCosts`,
+  `marketingBudget`) serialize as **strings** over JSON (Prisma `Decimal`
+  behavior, same gotcha as `Outfit.price` in `outfit.model.ts`) — the
+  model types them `string`, and `Dashboard.ngOnInit` converts with
+  `Number(...)` before patching the form; the PATCH payload sends plain
+  `number`s back.
+- `.kpi-grid`/`.kpi-tile` live in `src/styles.scss` (a dashboard-specific
+  pattern, but global like the rest of the design system) — reuse them for
+  any future count/metric tile rather than inventing another card style.
+
 ## Backend
 
 There is no local API in this repo. `fashion-api` (NestJS) owns Postgres via

@@ -363,6 +363,44 @@ table.data-table {
   margin-top: 0.25rem;
 }
 
+.save-confirmation {
+  color: var(--color-success);
+  font-size: 0.875rem;
+}
+
+// ---- KPI tiles (Dashboard) ----------------------------------------------------
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.kpi-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.kpi-tile__value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.kpi-tile__label {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
 // ---- Wizards (outfit-wizard, article-wizard) ---------------------------------
 // Shared by both wizard components - not just the outfit one - so it lives
 // here rather than duplicated per-component.

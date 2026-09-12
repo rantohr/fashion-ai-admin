@@ -1,0 +1,12 @@
+// .kpi-grid/.kpi-tile/.app-form/.field/.form-actions/.save-confirmation
+// all come from the shared classes in src/styles.scss - only the section
+// header spacing is specific to this page.
+
+.dashboard__section-header {
+  margin-bottom: 1rem;
+
+  h2 {
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+  }
+}
