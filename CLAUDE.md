@@ -116,6 +116,21 @@ Don't add more `@defer` blocks to satisfy this requirement again elsewhere.
   its `.spec.ts` for real coverage of the validation rules, as opposed to
   the component's necessarily-shallow spec.
 
+## Custom directives
+
+- `src/app/shared/copy-to-clipboard.ts` (`[appCopyToClipboard]`) — the
+  project's one custom attribute directive so far. Put it on any clickable
+  element with `[appCopyToClipboard]="someText()"`; it owns the click
+  handler, the `navigator.clipboard.writeText()` call, and a transient
+  "Copied!" label (`copyLabel` input overrides the idle text, default
+  `'Copy'`) via `host: { '[textContent]': ..., '(click)': ... }` — modern
+  Angular's `host` metadata object, not `@HostBinding`/`@HostListener`
+  decorators, to match this codebase's signals-first style. Both wizards'
+  "Copy" buttons use it; it replaced an identical `copyToClipboard()`
+  method that used to be duplicated in `OutfitWizard` and `ArticleWizard`.
+  Reach for this directive (or extend it) before writing another
+  click-to-copy button rather than re-adding a per-component method.
+
 ## Article wizard (Day 5)
 
 - Articles are independent (no relation to outfits or anything else, see

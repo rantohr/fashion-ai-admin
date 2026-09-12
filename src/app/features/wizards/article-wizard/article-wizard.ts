@@ -3,6 +3,7 @@ import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angu
 import { Router } from '@angular/router';
 import { ARTICLE_STATUSES } from '../../articles/article.model';
 import { ArticlesService } from '../../articles/articles.service';
+import { CopyToClipboard } from '../../../shared/copy-to-clipboard';
 import { slugify } from '../outfit-wizard/outfit-wizard.utils';
 import { buildArticleDataPrompt, getArticleSystemPrompt, parseArticleResponse } from './article-wizard.utils';
 
@@ -12,7 +13,7 @@ type WizardStep = 1 | 2;
 // image step - unlike OutfitWizard, this is a 2-step flow: generate +
 // parse one article, then review + create it.
 @Component({
-  imports: [FormsModule, ReactiveFormsModule],
+  imports: [FormsModule, ReactiveFormsModule, CopyToClipboard],
   selector: 'app-article-wizard',
   styleUrl: './article-wizard.scss',
   templateUrl: './article-wizard.html',
@@ -49,10 +50,6 @@ export class ArticleWizard {
     // Existing article titles become the <done_topics> the next prompt
     // asks the AI to avoid repeating.
     this.articlesService.list().subscribe((articles) => this.doneTopics.set(articles.map((article) => article.title)));
-  }
-
-  protected copyToClipboard(text: string): void {
-    void navigator.clipboard?.writeText(text);
   }
 
   protected parse(): void {
