@@ -116,6 +116,38 @@ Don't add more `@defer` blocks to satisfy this requirement again elsewhere.
   its `.spec.ts` for real coverage of the validation rules, as opposed to
   the component's necessarily-shallow spec.
 
+## Article wizard (Day 5)
+
+- Articles are independent (no relation to outfits or anything else, see
+  the Data model section above), so this wizard is **2 steps**, not 3 like
+  the outfit wizard: no outfit/brand picker, no image step.
+  1. **Generate & parse** — shows two separately-copyable prompt blocks
+     (a fixed persona/system prompt, and a per-run generation prompt built
+     from `buildArticleDataPrompt(doneTopics)`), a textarea to paste the
+     external AI's raw response, and a parse step.
+  2. **Review & create** — the parsed draft pre-fills an editable reactive
+     form (title/slug/excerpt/content/status); submitting calls
+     `ArticlesService.create()` directly (a single article, not a batch —
+     no transaction needed here).
+- `article-wizard.utils.ts` holds the prompt template and the parser,
+  split out for the same reason as `outfit-wizard.utils.ts`: unit-testable
+  without any DOM. `parseArticleResponse` follows a strict contract —
+  split the pasted text on the first two blank-line boundaries into
+  title / summary / content, in that order; everything after the second
+  boundary is content verbatim (it may itself contain blank lines, tables,
+  headings). `slugify` is imported from `outfit-wizard.utils.ts` rather
+  than duplicated.
+- **`doneTopics`**: the wizard fetches `ArticlesService.list()` on
+  construction and feeds every existing article's `title` into the next
+  prompt's `<done_topics>` block, so the external AI doesn't regenerate a
+  topic that's already been written. If article "topics" ever become a
+  distinct concept from `title`, update this mapping rather than adding a
+  second field that drifts from what's actually enforced.
+- `.wizard-steps`/`.wizard-prompt*`/`.wizard-errors` are shared globally
+  (`src/styles.scss`) between this wizard and the outfit wizard — add new
+  wizard-chrome classes there, not per-component, now that two components
+  use them.
+
 ## Backend
 
 There is no local API in this repo. `fashion-api` (NestJS) owns Postgres via

@@ -1,2 +1,100 @@
-<h1>Article wizard</h1>
-<p>Same shape as the outfit wizard, no image step. Coming Day 5.</p>
+<div class="page-header">
+  <h1>Article wizard</h1>
+</div>
+
+<ol class="wizard-steps">
+  <li [class.is-active]="step() === 1" [class.is-done]="step() > 1">1. Generate &amp; parse</li>
+  <li [class.is-active]="step() === 2">2. Review &amp; create</li>
+</ol>
+
+@if (step() === 1) {
+  <div class="app-form app-form--wide">
+    <div class="wizard-prompt">
+      <div class="wizard-prompt__header">
+        <span>System prompt</span>
+        <button type="button" class="btn btn--ghost btn--sm" (click)="copyToClipboard(systemPrompt)">Copy</button>
+      </div>
+      <pre class="wizard-prompt__body">{{ systemPrompt }}</pre>
+    </div>
+
+    <div class="wizard-prompt">
+      <div class="wizard-prompt__header">
+        <span>Article-generation prompt</span>
+        <button type="button" class="btn btn--ghost btn--sm" (click)="copyToClipboard(dataPrompt())">Copy</button>
+      </div>
+      <pre class="wizard-prompt__body">{{ dataPrompt() }}</pre>
+    </div>
+
+    <label class="field">
+      Paste the AI's response (title, blank line, summary, blank line, content)
+      <textarea rows="12" [ngModel]="rawResponse()" (ngModelChange)="rawResponse.set($event)"></textarea>
+    </label>
+
+    @if (parseErrors().length > 0) {
+      <ul class="error-text wizard-errors">
+        @for (err of parseErrors(); track err) {
+          <li>{{ err }}</li>
+        }
+      </ul>
+    }
+
+    <div class="form-actions">
+      <button type="button" class="btn btn--primary" [disabled]="!rawResponse()" (click)="parse()">
+        Parse &amp; continue
+      </button>
+    </div>
+  </div>
+}
+
+@if (step() === 2) {
+  <div class="app-form app-form--wide">
+    @if (createdId()) {
+      <p>Article created.</p>
+      <div class="form-actions">
+        <button type="button" class="btn btn--primary" (click)="goToArticles()">View articles</button>
+      </div>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <label class="field">
+          Title
+          <input type="text" formControlName="title" />
+        </label>
+
+        <label class="field">
+          Slug
+          <input type="text" formControlName="slug" />
+        </label>
+
+        <label class="field">
+          Excerpt
+          <textarea formControlName="excerpt" rows="2"></textarea>
+        </label>
+
+        <label class="field">
+          Content (markdown)
+          <textarea formControlName="content" rows="12"></textarea>
+        </label>
+
+        <label class="field">
+          Status
+          <select formControlName="status">
+            @for (status of statuses; track status) {
+              <option [value]="status">{{ status }}</option>
+            }
+          </select>
+        </label>
+
+        @if (saveError()) {
+          <p class="error-text">{{ saveError() }}</p>
+        }
+
+        <div class="form-actions">
+          <button type="button" class="btn btn--ghost" [disabled]="saving()" (click)="backToPrompt()">Back</button>
+          <button type="submit" class="btn btn--primary" [disabled]="form.invalid || saving()">
+            {{ saving() ? 'Creating…' : 'Create article' }}
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+}
