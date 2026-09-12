@@ -1,11 +1,13 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BusinessProfileService } from './business-profile.service';
-import { DashboardService } from './dashboard.service';
 import type { DashboardStats } from './dashboard.model';
+import { DashboardService } from './dashboard.service';
+import { titleCase, toRankBars, toShareBars } from './dashboard.utils';
 
 @Component({
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, DatePipe, DecimalPipe],
   selector: 'app-dashboard',
   styleUrl: './dashboard.scss',
   templateUrl: './dashboard.html',
@@ -24,6 +26,31 @@ export class Dashboard implements OnInit {
   protected readonly profileError = signal<string | null>(null);
   protected readonly saving = signal(false);
   protected readonly saved = signal(false);
+
+  // Every breakdown/leaderboard the template renders is derived here so
+  // dashboard.html only ever deals with a flat { label, count, pct }[] -
+  // see dashboard.utils.ts (unit-tested independently of this component).
+  protected readonly outfitStatusBars = computed(() =>
+    toShareBars(
+      (this.stats()?.outfitsByStatus ?? []).map((row) => ({ label: titleCase(row.status), count: row.count })),
+    ),
+  );
+
+  protected readonly outfitSeasonBars = computed(() =>
+    toShareBars(
+      (this.stats()?.outfitsBySeason ?? []).map((row) => ({ label: titleCase(row.season), count: row.count })),
+    ),
+  );
+
+  protected readonly articleStatusBars = computed(() =>
+    toShareBars(
+      (this.stats()?.articlesByStatus ?? []).map((row) => ({ label: titleCase(row.status), count: row.count })),
+    ),
+  );
+
+  protected readonly topBrandBars = computed(() =>
+    toRankBars((this.stats()?.topBrands ?? []).map((brand) => ({ label: brand.name, count: brand.outfitCount }))),
+  );
 
   protected readonly form = this.fb.nonNullable.group({
     shopName: ['', Validators.required],

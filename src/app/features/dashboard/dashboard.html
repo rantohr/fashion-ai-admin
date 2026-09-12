@@ -9,21 +9,129 @@
 } @else if (stats(); as s) {
   <div class="kpi-grid">
     <div class="kpi-tile">
-      <span class="kpi-tile__value">{{ s.brands }}</span>
+      <span class="kpi-tile__value">{{ s.totals.brands }}</span>
       <span class="kpi-tile__label">Brands</span>
     </div>
     <div class="kpi-tile">
-      <span class="kpi-tile__value">{{ s.outfits }}</span>
+      <span class="kpi-tile__value">{{ s.totals.outfits }}</span>
       <span class="kpi-tile__label">Outfits</span>
     </div>
     <div class="kpi-tile">
-      <span class="kpi-tile__value">{{ s.articles }}</span>
+      <span class="kpi-tile__value">{{ s.totals.articles }}</span>
       <span class="kpi-tile__label">Articles</span>
     </div>
     <div class="kpi-tile">
-      <span class="kpi-tile__value">{{ s.users }}</span>
+      <span class="kpi-tile__value">{{ s.totals.users }}</span>
       <span class="kpi-tile__label">Admin users</span>
     </div>
+    <div class="kpi-tile">
+      <span class="kpi-tile__value">{{ s.totals.scenarios }}</span>
+      <span class="kpi-tile__label">Scenarios</span>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <section class="stat-card">
+      <h2>Outfits by status</h2>
+      @for (bar of outfitStatusBars(); track bar.label) {
+        <div class="stat-bar-row">
+          <span class="stat-bar-row__label">{{ bar.label }}</span>
+          <div class="stat-bar">
+            <div class="stat-bar__fill" [style.width.%]="bar.pct"></div>
+          </div>
+          <span class="stat-bar-row__count">{{ bar.count }}</span>
+        </div>
+      }
+    </section>
+
+    <section class="stat-card">
+      <h2>Outfits by season</h2>
+      @for (bar of outfitSeasonBars(); track bar.label) {
+        <div class="stat-bar-row">
+          <span class="stat-bar-row__label">{{ bar.label }}</span>
+          <div class="stat-bar">
+            <div class="stat-bar__fill stat-bar__fill--alt" [style.width.%]="bar.pct"></div>
+          </div>
+          <span class="stat-bar-row__count">{{ bar.count }}</span>
+        </div>
+      }
+    </section>
+
+    <section class="stat-card">
+      <h2>Articles by status</h2>
+      @for (bar of articleStatusBars(); track bar.label) {
+        <div class="stat-bar-row">
+          <span class="stat-bar-row__label">{{ bar.label }}</span>
+          <div class="stat-bar">
+            <div class="stat-bar__fill" [style.width.%]="bar.pct"></div>
+          </div>
+          <span class="stat-bar-row__count">{{ bar.count }}</span>
+        </div>
+      }
+    </section>
+
+    <section class="stat-card">
+      <h2>Top brands by outfit count</h2>
+      @if (topBrandBars().length === 0) {
+        <p class="stat-card__empty">No outfits yet.</p>
+      } @else {
+        @for (bar of topBrandBars(); track bar.label) {
+          <div class="stat-bar-row">
+            <span class="stat-bar-row__label">{{ bar.label }}</span>
+            <div class="stat-bar">
+              <div class="stat-bar__fill stat-bar__fill--alt" [style.width.%]="bar.pct"></div>
+            </div>
+            <span class="stat-bar-row__count">{{ bar.count }}</span>
+          </div>
+        }
+      }
+    </section>
+
+    <section class="stat-card">
+      <h2>Outfit pricing</h2>
+      @if (s.pricing.min === null) {
+        <p class="stat-card__empty">No outfits yet.</p>
+      } @else {
+        <div class="pricing-row">
+          <div>
+            <span class="pricing-row__value">{{ s.pricing.min | number: '1.0-2' }}</span>
+            <span class="pricing-row__label">Lowest</span>
+          </div>
+          <div>
+            <span class="pricing-row__value">{{ s.pricing.avg | number: '1.0-2' }}</span>
+            <span class="pricing-row__label">Average</span>
+          </div>
+          <div>
+            <span class="pricing-row__value">{{ s.pricing.max | number: '1.0-2' }}</span>
+            <span class="pricing-row__label">Highest</span>
+          </div>
+        </div>
+      }
+    </section>
+
+    <section class="stat-card">
+      <h2>Recent activity</h2>
+      @if (s.recentOutfits.length === 0 && s.recentArticles.length === 0) {
+        <p class="stat-card__empty">Nothing created yet.</p>
+      } @else {
+        <ul class="recent-list">
+          @for (outfit of s.recentOutfits; track outfit.id) {
+            <li>
+              <span class="recent-list__badge">Outfit</span>
+              <span class="recent-list__title">{{ outfit.name }}</span>
+              <span class="recent-list__date">{{ outfit.createdAt | date: 'MMM d' }}</span>
+            </li>
+          }
+          @for (article of s.recentArticles; track article.id) {
+            <li>
+              <span class="recent-list__badge recent-list__badge--article">Article</span>
+              <span class="recent-list__title">{{ article.title }}</span>
+              <span class="recent-list__date">{{ article.createdAt | date: 'MMM d' }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
   </div>
 }
 

@@ -165,20 +165,39 @@ Don't add more `@defer` blocks to satisfy this requirement again elsewhere.
 
 ## Dashboard (Day 5)
 
-- `features/dashboard/`: `DashboardService` (`GET /dashboard/stats` -
-  content counts) and `BusinessProfileService` (`GET`/`PATCH
-  /business-profile`, the Day 2 singleton endpoint) are separate services
-  hitting separate API resources — don't merge them into one service just
-  because they render on the same page.
+- `features/dashboard/`: `DashboardService` (`GET /dashboard/stats` - see
+  below) and `BusinessProfileService` (`GET`/`PATCH /business-profile`,
+  the Day 2 singleton endpoint) are separate services hitting separate API
+  resources — don't merge them into one service just because they render
+  on the same page.
 - `BusinessProfile`'s Decimal fields (`monthlyRevenue`, `monthlyCosts`,
   `marketingBudget`) serialize as **strings** over JSON (Prisma `Decimal`
   behavior, same gotcha as `Outfit.price` in `outfit.model.ts`) — the
   model types them `string`, and `Dashboard.ngOnInit` converts with
   `Number(...)` before patching the form; the PATCH payload sends plain
   `number`s back.
-- `.kpi-grid`/`.kpi-tile` live in `src/styles.scss` (a dashboard-specific
-  pattern, but global like the rest of the design system) — reuse them for
-  any future count/metric tile rather than inventing another card style.
+- `dashboard.model.ts`'s `DashboardStats` mirrors the API's aggregate
+  response: `totals` (5 counts), `outfitsByStatus`/`outfitsBySeason`/
+  `articlesByStatus` (complete breakdowns — every enum value present, even
+  at count 0), `topBrands` (top 5 by outfit count), `pricing` (min/avg/max,
+  all `null` when there are no outfits), `recentOutfits`/`recentArticles`
+  (last 5 each).
+- `dashboard.utils.ts` holds the presentation-only pure functions —
+  `titleCase` (`'ALL_SEASON'` -> `'All Season'`), `toShareBars` (percentage
+  of the group's own total — for breakdowns that partition one whole set,
+  bars sum to ~100%), `toRankBars` (percentage of the highest value — for
+  the top-brands leaderboard, which doesn't partition a whole). `Dashboard`
+  maps each raw breakdown to `{ label, count }` before handing it to one of
+  these, then the template only ever renders a flat `{ label, count,
+  pct }[]` via the shared `.stat-card`/`.stat-bar-row`/`.stat-bar` classes
+  in `dashboard.scss`. Split out the same way `outfit-wizard.utils.ts` is,
+  so the percentage math has real unit tests independent of the DOM.
+- `.kpi-grid`/`.kpi-tile` live in `src/styles.scss` (global, like the rest
+  of the design system — reuse for any future count/metric tile).
+  `.stat-card`/`.stat-bar*`/`.pricing-row`/`.recent-list` are currently
+  Dashboard-only and live in `dashboard.scss`; promote them to
+  `styles.scss` if a second page ever needs the same breakdown-bar look
+  (same threshold that moved `.wizard-*` there).
 
 ## Backend
 

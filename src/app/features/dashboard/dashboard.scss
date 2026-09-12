@@ -1,12 +1,149 @@
 // .kpi-grid/.kpi-tile/.app-form/.field/.form-actions/.save-confirmation
-// all come from the shared classes in src/styles.scss - only the section
-// header spacing is specific to this page.
+// all come from the shared classes in src/styles.scss - everything below
+// is specific to this page's breakdown/leaderboard/recent-activity cards.
 
 .dashboard__section-header {
-  margin-bottom: 1rem;
+  margin: 2rem 0 1rem;
 
   h2 {
     font-size: 1.1rem;
     margin-bottom: 0.25rem;
   }
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.stat-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 1.25rem;
+
+  h2 {
+    font-size: 0.9375rem;
+    margin-bottom: 0.9rem;
+  }
+}
+
+.stat-card__empty {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.stat-bar-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 2.5rem;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.8125rem;
+
+  & + & {
+    margin-top: 0.55rem;
+  }
+}
+
+.stat-bar-row__label {
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stat-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-surface-hover);
+  overflow: hidden;
+}
+
+.stat-bar__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-accent);
+}
+
+.stat-bar__fill--alt {
+  background: color-mix(in srgb, var(--color-accent) 55%, var(--color-text-muted));
+}
+
+.stat-bar-row__count {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-secondary);
+}
+
+.pricing-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}
+
+.pricing-row__value {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.pricing-row__label {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.recent-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.8125rem;
+  }
+}
+
+.recent-list__badge {
+  flex: none;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
+}
+
+.recent-list__badge--article {
+  color: var(--color-text-secondary);
+  background: var(--color-surface-hover);
+}
+
+.recent-list__title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recent-list__date {
+  flex: none;
+  color: var(--color-text-muted);
 }
