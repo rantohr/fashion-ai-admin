@@ -8,16 +8,6 @@
 
 <form class="app-form app-form--wide" [formGroup]="form" (ngSubmit)="submit()">
   <label class="field">
-    Outfit
-    <select formControlName="outfitId">
-      <option value="" disabled>Select an outfit</option>
-      @for (outfit of outfits(); track outfit.id) {
-        <option [value]="outfit.id">{{ outfit.name }}</option>
-      }
-    </select>
-  </label>
-
-  <label class="field">
     Title
     <input type="text" formControlName="title" />
   </label>

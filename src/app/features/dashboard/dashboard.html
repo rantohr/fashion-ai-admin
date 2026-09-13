@@ -1,2 +1,185 @@
-<h1>Dashboard</h1>
-<p>KPI cards + the business profile edit form. Coming Day 5.</p>
+<div class="page-header">
+  <h1>Dashboard</h1>
+</div>
+
+@if (statsError()) {
+  <p class="error-text">{{ statsError() }}</p>
+} @else if (statsLoading()) {
+  <p>Loading…</p>
+} @else if (stats(); as s) {
+  <div class="kpi-grid">
+    <div class="kpi-tile">
+      <span class="kpi-tile__value">{{ s.totals.brands }}</span>
+      <span class="kpi-tile__label">Brands</span>
+    </div>
+    <div class="kpi-tile">
+      <span class="kpi-tile__value">{{ s.totals.outfits }}</span>
+      <span class="kpi-tile__label">Outfits</span>
+    </div>
+    <div class="kpi-tile">
+      <span class="kpi-tile__value">{{ s.totals.articles }}</span>
+      <span class="kpi-tile__label">Articles</span>
+    </div>
+    <div class="kpi-tile">
+      <span class="kpi-tile__value">{{ s.totals.users }}</span>
+      <span class="kpi-tile__label">Admin users</span>
+    </div>
+    <div class="kpi-tile">
+      <span class="kpi-tile__value">{{ s.totals.scenarios }}</span>
+      <span class="kpi-tile__label">Scenarios</span>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <section class="stat-card">
+      <h2>Outfits by status</h2>
+      @for (bar of outfitStatusBars(); track bar.label) {
+        <div class="stat-bar-row">
+          <span class="stat-bar-row__label">{{ bar.label }}</span>
+          <div class="stat-bar">
+            <div class="stat-bar__fill" [style.width.%]="bar.pct"></div>
+          </div>
+          <span class="stat-bar-row__count">{{ bar.count }}</span>
+        </div>
+      }
+    </section>
+
+    <section class="stat-card">
+      <h2>Outfits by season</h2>
+      @for (bar of outfitSeasonBars(); track bar.label) {
+        <div class="stat-bar-row">
+          <span class="stat-bar-row__label">{{ bar.label }}</span>
+          <div class="stat-bar">
+            <div class="stat-bar__fill stat-bar__fill--alt" [style.width.%]="bar.pct"></div>
+          </div>
+          <span class="stat-bar-row__count">{{ bar.count }}</span>
+        </div>
+      }
+    </section>
+
+    <section class="stat-card">
+      <h2>Articles by status</h2>
+      @for (bar of articleStatusBars(); track bar.label) {
+        <div class="stat-bar-row">
+          <span class="stat-bar-row__label">{{ bar.label }}</span>
+          <div class="stat-bar">
+            <div class="stat-bar__fill" [style.width.%]="bar.pct"></div>
+          </div>
+          <span class="stat-bar-row__count">{{ bar.count }}</span>
+        </div>
+      }
+    </section>
+
+    <section class="stat-card">
+      <h2>Top brands by outfit count</h2>
+      @if (topBrandBars().length === 0) {
+        <p class="stat-card__empty">No outfits yet.</p>
+      } @else {
+        @for (bar of topBrandBars(); track bar.label) {
+          <div class="stat-bar-row">
+            <span class="stat-bar-row__label">{{ bar.label }}</span>
+            <div class="stat-bar">
+              <div class="stat-bar__fill stat-bar__fill--alt" [style.width.%]="bar.pct"></div>
+            </div>
+            <span class="stat-bar-row__count">{{ bar.count }}</span>
+          </div>
+        }
+      }
+    </section>
+
+    <section class="stat-card">
+      <h2>Outfit pricing</h2>
+      @if (s.pricing.min === null) {
+        <p class="stat-card__empty">No outfits yet.</p>
+      } @else {
+        <div class="pricing-row">
+          <div>
+            <span class="pricing-row__value">{{ s.pricing.min | number: '1.0-2' }}</span>
+            <span class="pricing-row__label">Lowest</span>
+          </div>
+          <div>
+            <span class="pricing-row__value">{{ s.pricing.avg | number: '1.0-2' }}</span>
+            <span class="pricing-row__label">Average</span>
+          </div>
+          <div>
+            <span class="pricing-row__value">{{ s.pricing.max | number: '1.0-2' }}</span>
+            <span class="pricing-row__label">Highest</span>
+          </div>
+        </div>
+      }
+    </section>
+
+    <section class="stat-card">
+      <h2>Recent activity</h2>
+      @if (recentActivity().length === 0) {
+        <p class="stat-card__empty">Nothing created yet.</p>
+      } @else {
+        <ul class="recent-list">
+          @for (item of recentActivity(); track item.id) {
+            <li>
+              <span class="recent-list__badge" [class.recent-list__badge--article]="item.kind === 'article'">
+                {{ item.kind === 'article' ? 'Article' : 'Outfit' }}
+              </span>
+              <span class="recent-list__title">{{ item.title }}</span>
+              <span class="recent-list__date">{{ item.createdAt | date: 'MMM d' }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  </div>
+}
+
+<div class="dashboard__section-header">
+  <h2>Business profile</h2>
+  <p class="page-header__subtitle">Baseline KPIs the Scenario Simulator riffs on.</p>
+</div>
+
+@if (profileLoading()) {
+  <p>Loading…</p>
+} @else {
+  <form class="app-form" [formGroup]="form" (ngSubmit)="submit()">
+    <label class="field">
+      Shop name
+      <input type="text" formControlName="shopName" />
+    </label>
+
+    <label class="field">
+      Monthly revenue (USD)
+      <input type="number" formControlName="monthlyRevenue" min="0" step="0.01" />
+    </label>
+
+    <label class="field">
+      Monthly costs (USD)
+      <input type="number" formControlName="monthlyCosts" min="0" step="0.01" />
+    </label>
+
+    <label class="field">
+      Monthly customers
+      <input type="number" formControlName="monthlyCustomers" min="1" />
+    </label>
+
+    <label class="field">
+      Monthly sales volume
+      <input type="number" formControlName="monthlySalesVolume" min="1" />
+    </label>
+
+    <label class="field">
+      Marketing budget (USD)
+      <input type="number" formControlName="marketingBudget" min="0" step="0.01" />
+    </label>
+
+    @if (profileError()) {
+      <p class="error-text">{{ profileError() }}</p>
+    }
+    @if (saved()) {
+      <p class="save-confirmation">Saved.</p>
+    }
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn--primary" [disabled]="form.invalid || saving()">
+        {{ saving() ? 'Saving…' : 'Save' }}
+      </button>
+    </div>
+  </form>
+}

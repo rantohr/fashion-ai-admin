@@ -23,7 +23,7 @@
     <div class="wizard-prompt">
       <div class="wizard-prompt__header">
         <span>Data-generation prompt</span>
-        <button type="button" class="btn btn--ghost btn--sm" (click)="copyToClipboard(dataPrompt())">Copy</button>
+        <button type="button" class="btn btn--ghost btn--sm" [appCopyToClipboard]="dataPrompt()">Copy</button>
       </div>
       <pre class="wizard-prompt__body">{{ dataPrompt() }}</pre>
     </div>
@@ -59,7 +59,7 @@
     <div class="wizard-prompt">
       <div class="wizard-prompt__header">
         <span>Image-generation prompt</span>
-        <button type="button" class="btn btn--ghost btn--sm" (click)="copyToClipboard(imagePrompt())">Copy</button>
+        <button type="button" class="btn btn--ghost btn--sm" [appCopyToClipboard]="imagePrompt()">Copy</button>
       </div>
       <pre class="wizard-prompt__body">{{ imagePrompt() }}</pre>
     </div>

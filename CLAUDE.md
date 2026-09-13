@@ -116,6 +116,89 @@ Don't add more `@defer` blocks to satisfy this requirement again elsewhere.
   its `.spec.ts` for real coverage of the validation rules, as opposed to
   the component's necessarily-shallow spec.
 
+## Custom directives
+
+- `src/app/shared/copy-to-clipboard.ts` (`[appCopyToClipboard]`) — the
+  project's one custom attribute directive so far. Put it on any clickable
+  element with `[appCopyToClipboard]="someText()"`; it owns the click
+  handler, the `navigator.clipboard.writeText()` call, and a transient
+  "Copied!" label (`copyLabel` input overrides the idle text, default
+  `'Copy'`) via `host: { '[textContent]': ..., '(click)': ... }` — modern
+  Angular's `host` metadata object, not `@HostBinding`/`@HostListener`
+  decorators, to match this codebase's signals-first style. Both wizards'
+  "Copy" buttons use it; it replaced an identical `copyToClipboard()`
+  method that used to be duplicated in `OutfitWizard` and `ArticleWizard`.
+  Reach for this directive (or extend it) before writing another
+  click-to-copy button rather than re-adding a per-component method.
+
+## Article wizard (Day 5)
+
+- Articles are independent (no relation to outfits or anything else, see
+  the Data model section above), so this wizard is **2 steps**, not 3 like
+  the outfit wizard: no outfit/brand picker, no image step.
+  1. **Generate & parse** — shows two separately-copyable prompt blocks
+     (a fixed persona/system prompt, and a per-run generation prompt built
+     from `buildArticleDataPrompt(doneTopics)`), a textarea to paste the
+     external AI's raw response, and a parse step.
+  2. **Review & create** — the parsed draft pre-fills an editable reactive
+     form (title/slug/excerpt/content/status); submitting calls
+     `ArticlesService.create()` directly (a single article, not a batch —
+     no transaction needed here).
+- `article-wizard.utils.ts` holds the prompt template and the parser,
+  split out for the same reason as `outfit-wizard.utils.ts`: unit-testable
+  without any DOM. `parseArticleResponse` follows a strict contract —
+  split the pasted text on the first two blank-line boundaries into
+  title / summary / content, in that order; everything after the second
+  boundary is content verbatim (it may itself contain blank lines, tables,
+  headings). `slugify` is imported from `outfit-wizard.utils.ts` rather
+  than duplicated.
+- **`doneTopics`**: the wizard fetches `ArticlesService.list()` on
+  construction and feeds every existing article's `title` into the next
+  prompt's `<done_topics>` block, so the external AI doesn't regenerate a
+  topic that's already been written. If article "topics" ever become a
+  distinct concept from `title`, update this mapping rather than adding a
+  second field that drifts from what's actually enforced.
+- `.wizard-steps`/`.wizard-prompt*`/`.wizard-errors` are shared globally
+  (`src/styles.scss`) between this wizard and the outfit wizard — add new
+  wizard-chrome classes there, not per-component, now that two components
+  use them.
+
+## Dashboard (Day 5)
+
+- `features/dashboard/`: `DashboardService` (`GET /dashboard/stats` - see
+  below) and `BusinessProfileService` (`GET`/`PATCH /business-profile`,
+  the Day 2 singleton endpoint) are separate services hitting separate API
+  resources — don't merge them into one service just because they render
+  on the same page.
+- `BusinessProfile`'s Decimal fields (`monthlyRevenue`, `monthlyCosts`,
+  `marketingBudget`) serialize as **strings** over JSON (Prisma `Decimal`
+  behavior, same gotcha as `Outfit.price` in `outfit.model.ts`) — the
+  model types them `string`, and `Dashboard.ngOnInit` converts with
+  `Number(...)` before patching the form; the PATCH payload sends plain
+  `number`s back.
+- `dashboard.model.ts`'s `DashboardStats` mirrors the API's aggregate
+  response: `totals` (5 counts), `outfitsByStatus`/`outfitsBySeason`/
+  `articlesByStatus` (complete breakdowns — every enum value present, even
+  at count 0), `topBrands` (top 5 by outfit count), `pricing` (min/avg/max,
+  all `null` when there are no outfits), `recentOutfits`/`recentArticles`
+  (last 5 each).
+- `dashboard.utils.ts` holds the presentation-only pure functions —
+  `titleCase` (`'ALL_SEASON'` -> `'All Season'`), `toShareBars` (percentage
+  of the group's own total — for breakdowns that partition one whole set,
+  bars sum to ~100%), `toRankBars` (percentage of the highest value — for
+  the top-brands leaderboard, which doesn't partition a whole). `Dashboard`
+  maps each raw breakdown to `{ label, count }` before handing it to one of
+  these, then the template only ever renders a flat `{ label, count,
+  pct }[]` via the shared `.stat-card`/`.stat-bar-row`/`.stat-bar` classes
+  in `dashboard.scss`. Split out the same way `outfit-wizard.utils.ts` is,
+  so the percentage math has real unit tests independent of the DOM.
+- `.kpi-grid`/`.kpi-tile` live in `src/styles.scss` (global, like the rest
+  of the design system — reuse for any future count/metric tile).
+  `.stat-card`/`.stat-bar*`/`.pricing-row`/`.recent-list` are currently
+  Dashboard-only and live in `dashboard.scss`; promote them to
+  `styles.scss` if a second page ever needs the same breakdown-bar look
+  (same threshold that moved `.wizard-*` there).
+
 ## Backend
 
 There is no local API in this repo. `fashion-api` (NestJS) owns Postgres via

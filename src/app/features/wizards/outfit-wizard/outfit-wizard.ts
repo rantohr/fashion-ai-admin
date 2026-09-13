@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { UploadsService } from '../../../core/uploads/uploads.service';
+import { CopyToClipboard } from '../../../shared/copy-to-clipboard';
 import { ImageCropper } from '../../../shared/image-cropper/image-cropper';
 import type { Brand } from '../../brands/brand.model';
 import { BrandsService } from '../../brands/brands.service';
@@ -18,7 +19,7 @@ const OUTFIT_COUNT = GRID_ROWS * GRID_COLS;
 type WizardStep = 1 | 2 | 3;
 
 @Component({
-  imports: [FormsModule, ImageCropper],
+  imports: [FormsModule, ImageCropper, CopyToClipboard],
   selector: 'app-outfit-wizard',
   styleUrl: './outfit-wizard.scss',
   templateUrl: './outfit-wizard.html',
@@ -73,10 +74,6 @@ Return ONLY a raw JSON array (no markdown fences, no commentary) of exactly ${OU
 
   constructor() {
     this.brandsService.list().subscribe((brands) => this.brands.set(brands));
-  }
-
-  protected copyToClipboard(text: string): void {
-    void navigator.clipboard?.writeText(text);
   }
 
   protected parseJson(): void {
