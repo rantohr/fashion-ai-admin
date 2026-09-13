@@ -87,4 +87,17 @@ describe('CopyToClipboard', () => {
 
     expect(writeText).not.toHaveBeenCalled();
   });
+
+  it('clears the pending reset timer on destroy', () => {
+    vi.useFakeTimers();
+    const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout');
+    const fixture = createHost();
+    const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+
+    button.click();
+    return Promise.resolve().then(() => {
+      fixture.destroy();
+      expect(clearTimeoutSpy).toHaveBeenCalled();
+    });
+  });
 });

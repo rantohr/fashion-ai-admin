@@ -1,4 +1,4 @@
-import { Directive, computed, input, signal } from '@angular/core';
+import { Directive, OnDestroy, computed, input, signal } from '@angular/core';
 
 const FEEDBACK_DURATION_MS = 1500;
 
@@ -18,7 +18,7 @@ const FEEDBACK_DURATION_MS = 1500;
     '(click)': 'onClick()',
   },
 })
-export class CopyToClipboard {
+export class CopyToClipboard implements OnDestroy {
   // The text copied to the clipboard on click.
   readonly appCopyToClipboard = input.required<string>();
   // Idle label; restored automatically after the "Copied!" flash.
@@ -28,6 +28,10 @@ export class CopyToClipboard {
   protected readonly label = computed(() => (this.copied() ? 'Copied!' : this.copyLabel()));
 
   private resetTimer: ReturnType<typeof setTimeout> | undefined;
+
+  ngOnDestroy(): void {
+    clearTimeout(this.resetTimer);
+  }
 
   protected async onClick(): Promise<void> {
     const text = this.appCopyToClipboard();

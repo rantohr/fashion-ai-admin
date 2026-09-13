@@ -111,22 +111,17 @@
 
     <section class="stat-card">
       <h2>Recent activity</h2>
-      @if (s.recentOutfits.length === 0 && s.recentArticles.length === 0) {
+      @if (recentActivity().length === 0) {
         <p class="stat-card__empty">Nothing created yet.</p>
       } @else {
         <ul class="recent-list">
-          @for (outfit of s.recentOutfits; track outfit.id) {
+          @for (item of recentActivity(); track item.id) {
             <li>
-              <span class="recent-list__badge">Outfit</span>
-              <span class="recent-list__title">{{ outfit.name }}</span>
-              <span class="recent-list__date">{{ outfit.createdAt | date: 'MMM d' }}</span>
-            </li>
-          }
-          @for (article of s.recentArticles; track article.id) {
-            <li>
-              <span class="recent-list__badge recent-list__badge--article">Article</span>
-              <span class="recent-list__title">{{ article.title }}</span>
-              <span class="recent-list__date">{{ article.createdAt | date: 'MMM d' }}</span>
+              <span class="recent-list__badge" [class.recent-list__badge--article]="item.kind === 'article'">
+                {{ item.kind === 'article' ? 'Article' : 'Outfit' }}
+              </span>
+              <span class="recent-list__title">{{ item.title }}</span>
+              <span class="recent-list__date">{{ item.createdAt | date: 'MMM d' }}</span>
             </li>
           }
         </ul>
@@ -161,12 +156,12 @@
 
     <label class="field">
       Monthly customers
-      <input type="number" formControlName="monthlyCustomers" min="0" />
+      <input type="number" formControlName="monthlyCustomers" min="1" />
     </label>
 
     <label class="field">
       Monthly sales volume
-      <input type="number" formControlName="monthlySalesVolume" min="0" />
+      <input type="number" formControlName="monthlySalesVolume" min="1" />
     </label>
 
     <label class="field">

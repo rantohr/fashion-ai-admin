@@ -4,7 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BusinessProfileService } from './business-profile.service';
 import type { DashboardStats } from './dashboard.model';
 import { DashboardService } from './dashboard.service';
-import { titleCase, toRankBars, toShareBars } from './dashboard.utils';
+import { titleCase, toRankBars, toRecentActivity, toShareBars } from './dashboard.utils';
 
 @Component({
   imports: [ReactiveFormsModule, DatePipe, DecimalPipe],
@@ -52,12 +52,18 @@ export class Dashboard implements OnInit {
     toRankBars((this.stats()?.topBrands ?? []).map((brand) => ({ label: brand.name, count: brand.outfitCount }))),
   );
 
+  protected readonly recentActivity = computed(() =>
+    toRecentActivity(this.stats()?.recentOutfits ?? [], this.stats()?.recentArticles ?? []),
+  );
+
   protected readonly form = this.fb.nonNullable.group({
     shopName: ['', Validators.required],
     monthlyRevenue: [0, [Validators.required, Validators.min(0)]],
     monthlyCosts: [0, [Validators.required, Validators.min(0)]],
-    monthlyCustomers: [0, [Validators.required, Validators.min(0)]],
-    monthlySalesVolume: [0, [Validators.required, Validators.min(0)]],
+    // The API requires these two as positive integers (@IsPositive()), unlike
+    // the other fields here which merely disallow negatives - min(1) matches.
+    monthlyCustomers: [0, [Validators.required, Validators.min(1)]],
+    monthlySalesVolume: [0, [Validators.required, Validators.min(1)]],
     marketingBudget: [0, [Validators.required, Validators.min(0)]],
   });
 

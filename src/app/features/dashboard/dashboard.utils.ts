@@ -7,6 +7,13 @@ export interface BarItem extends LabeledCount {
   pct: number;
 }
 
+export interface RecentActivityItem {
+  id: string;
+  kind: 'outfit' | 'article';
+  title: string;
+  createdAt: string;
+}
+
 // "ALL_SEASON" -> "All Season", "DRAFT" -> "Draft".
 export function titleCase(value: string): string {
   return value
@@ -30,4 +37,23 @@ export function toShareBars(items: LabeledCount[]): BarItem[] {
 export function toRankBars(items: LabeledCount[]): BarItem[] {
   const max = items.reduce((highest, item) => Math.max(highest, item.count), 0);
   return items.map((item) => ({ ...item, pct: max > 0 ? Math.round((item.count / max) * 100) : 0 }));
+}
+
+// Merges the two "recent" lists into one feed ordered by creation date
+// (newest first) instead of always showing every outfit before every
+// article.
+export function toRecentActivity(
+  outfits: { id: string; name: string; createdAt: string }[],
+  articles: { id: string; title: string; createdAt: string }[],
+): RecentActivityItem[] {
+  const items: RecentActivityItem[] = [
+    ...outfits.map((outfit) => ({ id: outfit.id, kind: 'outfit' as const, title: outfit.name, createdAt: outfit.createdAt })),
+    ...articles.map((article) => ({
+      id: article.id,
+      kind: 'article' as const,
+      title: article.title,
+      createdAt: article.createdAt,
+    })),
+  ];
+  return items.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
 }

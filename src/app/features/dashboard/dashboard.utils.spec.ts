@@ -1,4 +1,4 @@
-import { titleCase, toRankBars, toShareBars } from './dashboard.utils';
+import { titleCase, toRankBars, toRecentActivity, toShareBars } from './dashboard.utils';
 
 describe('titleCase', () => {
   it('title-cases a single word', () => {
@@ -50,5 +50,23 @@ describe('toRankBars', () => {
 
   it('returns 0% for an empty list', () => {
     expect(toRankBars([])).toEqual([]);
+  });
+});
+
+describe('toRecentActivity', () => {
+  it('merges outfits and articles ordered by creation date, newest first', () => {
+    const items = toRecentActivity(
+      [
+        { id: 'o1', name: 'Old Outfit', createdAt: '2026-01-01T00:00:00Z' },
+        { id: 'o2', name: 'New Outfit', createdAt: '2026-03-01T00:00:00Z' },
+      ],
+      [{ id: 'a1', title: 'Mid Article', createdAt: '2026-02-01T00:00:00Z' }],
+    );
+
+    expect(items.map((item) => item.id)).toEqual(['o2', 'a1', 'o1']);
+  });
+
+  it('returns an empty list when there is nothing recent', () => {
+    expect(toRecentActivity([], [])).toEqual([]);
   });
 });
